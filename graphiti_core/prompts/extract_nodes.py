@@ -166,8 +166,8 @@ Guidelines:
 
 
 def extract_text(context: dict[str, Any]) -> list[Message]:
-    sys_prompt = """You are an AI assistant that extracts entity nodes from text. 
-    Your primary task is to extract and classify the speaker and other significant entities mentioned in the provided text."""
+    sys_prompt = """You are an AI assistant that extracts entities from text. 
+    Your primary task is to extract and classify the speaker (if any) and other significant entities mentioned in the provided text."""
 
     user_prompt = f"""
 <ENTITY TYPES>
@@ -178,17 +178,18 @@ def extract_text(context: dict[str, Any]) -> list[Message]:
 {context['episode_content']}
 </TEXT>
 
-Given the above text, extract entities from the TEXT that are explicitly or implicitly mentioned.
-For each entity extracted, also determine its entity type based on the provided ENTITY TYPES and their descriptions.
-Indicate the classified entity type by providing its entity_type_id.
+Given the above text contained within opening and closing TEXT tags, extract entities from the text that are explicitly or implicitly mentioned.
+For each entity extracted, also determine its entity type based on the provided ENTITY TYPES (contained between opening and closing "ENTITY TYPES" tags) and their descriptions and properties.
+Indicate the classified entity type by providing its entity_type_id. If an ENTITY TYPE contains properties, use these to help determine
+if the entity matches the type, but DO NOT extract properties as separate entities.
 
 {context['custom_prompt']}
 
 Guidelines:
-1. Extract significant entities, concepts, or actors mentioned in the conversation.
-2. Avoid creating nodes for relationships or actions.
-3. Avoid creating nodes for temporal information like dates, times or years (these will be added to edges later).
-4. Be as explicit as possible in your node names, using full names and avoiding abbreviations.
+1. Extract significant entities, concepts, or actors mentioned in the text.
+2. Avoid creating entities for relationships, actions or entity type properties
+3. Avoid creating entities for temporal information like dates, times or years (these will be added to edges later).
+4. Be as explicit as possible in your entities names, using full names and avoiding abbreviations.
 """
     return [
         Message(role='system', content=sys_prompt),

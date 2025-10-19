@@ -113,6 +113,8 @@ async def extract_nodes(
                 'entity_type_id': i + 1,
                 'entity_type_name': type_name,
                 'entity_type_description': type_model.__doc__,
+                'properties': [{'property_name': field, 'property_description': field_info.description or ''}
+                               for field, field_info in type_model.model_fields.items()],
             }
             for i, (type_name, type_model) in enumerate(entity_types.items())
         ]
